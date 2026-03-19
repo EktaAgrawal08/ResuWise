@@ -9,18 +9,11 @@ export default function ResultsSection({ results, onBackToAnalysis, onHome }) {
   const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
-    // Trigger animation on mount
     setAnimateProgress(true);
-    // Generate suggestions based on results
     const generatedSuggestions = generateImprovementSuggestions(results);
     setSuggestions(generatedSuggestions);
-    // Debug: log the results structure
-    console.log('Results received:', results);
-    console.log('ATS Breakdown:', results?.atsScoreBreakdown);
-    console.log('Matched Skills:', results?.matchedSkills);
   }, [results]);
 
-  // Extract data with backward compatibility
   const {
     matchPercentage = 0,
     atsScore = 0,
@@ -34,13 +27,6 @@ export default function ResultsSection({ results, onBackToAnalysis, onHome }) {
     allRequiredSkills = [],
     providedSkills = []
   } = results;
-
-  // Helper to get color based on score
-  const getScoreColor = (score) => {
-    if (score >= 80) return 'text-green-600';
-    if (score >= 60) return 'text-yellow-600';
-    return 'text-red-600';
-  };
 
   const handleDownloadPDF = async () => {
     try {
@@ -56,339 +42,249 @@ export default function ResultsSection({ results, onBackToAnalysis, onHome }) {
     }
   };
 
-  const getScoreBg = (score) => {
-    if (score >= 80) return 'from-green-400 to-green-600';
-    if (score >= 60) return 'from-yellow-400 to-yellow-600';
-    return 'from-red-400 to-red-600';
+  const getScoreColor = (score) => {
+    if (score >= 80) return 'text-emerald-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-red-400';
   };
 
-  const getScoreBgLight = (score) => {
-    if (score >= 80) return 'bg-green-100 border-green-300';
-    if (score >= 60) return 'bg-yellow-100 border-yellow-300';
-    return 'bg-red-100 border-red-300';
+  const getScoreRing = (score) => {
+    if (score >= 80) return '#10b981';
+    if (score >= 60) return '#eab308';
+    return '#ef4444';
   };
 
-  // Animated circular progress component
-  const CircularProgress = ({ percentage, label }) => {
-    const radius = 45;
+  const getScoreLabel = (score) => {
+    if (score >= 80) return { text: 'Excellent Match', color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' };
+    if (score >= 60) return { text: 'Good Match', color: 'text-yellow-400', bg: 'bg-yellow-500/10 border-yellow-500/20' };
+    return { text: 'Needs Work', color: 'text-red-400', bg: 'bg-red-500/10 border-red-500/20' };
+  };
+
+  // Circular progress ring
+  const CircularProgress = ({ percentage, label, sublabel }) => {
+    const radius = 46;
     const circumference = 2 * Math.PI * radius;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
+    const offset = circumference - (percentage / 100) * circumference;
+    const ringColor = getScoreRing(percentage);
+    const scoreLabel = getScoreLabel(percentage);
 
     return (
-      <div className="flex flex-col items-center">
-        <div className="relative w-32 h-32">
-          <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
-            {/* Background circle */}
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative w-36 h-36">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r={radius} fill="none" stroke="#ffffff08" strokeWidth="8" />
             <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              fill="none"
-              stroke="#e5e7eb"
-              strokeWidth="8"
-            />
-            {/* Progress circle */}
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              fill="none"
-              stroke={
-                percentage >= 80
-                  ? '#10b981'
-                  : percentage >= 60
-                  ? '#eab308'
-                  : '#ef4444'
-              }
-              strokeWidth="8"
+              cx="60" cy="60" r={radius} fill="none"
+              stroke={ringColor} strokeWidth="8"
               strokeDasharray={circumference}
-              strokeDashoffset={animateProgress ? strokeDashoffset : circumference}
+              strokeDashoffset={animateProgress ? offset : circumference}
               strokeLinecap="round"
               className="transition-all duration-1000 ease-out"
+              style={{ filter: `drop-shadow(0 0 8px ${ringColor}60)` }}
             />
           </svg>
-          {/* Center text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className={`text-4xl font-bold ${getScoreColor(percentage)}`}>
-              {Math.round(percentage)}%
-            </div>
+            <span className={`text-3xl font-bold ${getScoreColor(percentage)}`}>{Math.round(percentage)}%</span>
           </div>
         </div>
-        <p className="mt-4 text-center font-semibold text-gray-700">{label}</p>
+        <div className="text-center">
+          <p className="text-white font-semibold text-sm">{label}</p>
+          {sublabel && <p className="text-gray-500 text-xs mt-0.5">{sublabel}</p>}
+          <span className={`inline-block mt-2 text-xs px-2 py-0.5 rounded-full border font-medium ${scoreLabel.bg} ${scoreLabel.color}`}>
+            {scoreLabel.text}
+          </span>
+        </div>
       </div>
     );
   };
 
-  // Get all matched skills or use backward compatibility
+  // Progress bar row
+  const ScoreBar = ({ label, weight, value, color }) => (
+    <div>
+      <div className="flex justify-between items-center mb-1.5">
+        <span className="text-sm text-gray-400">{label} <span className="text-gray-600">({weight})</span></span>
+        <span className="text-sm font-bold text-white">{value ?? 'N/A'}{value !== undefined ? '%' : ''}</span>
+      </div>
+      <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-1000 ${color}`}
+          style={{ width: animateProgress && value !== undefined ? `${value}%` : '0%' }}
+        />
+      </div>
+    </div>
+  );
+
   let allMatchedSkills = {};
   let allMissingSkills = {};
-  
   try {
-    allMatchedSkills = (matchedSkills && Object.values(matchedSkills).flat().length > 0)
+    allMatchedSkills = matchedSkills && Object.values(matchedSkills).flat().length > 0
       ? matchedSkills
-      : (extractedResumeSkills && Object.values(extractedResumeSkills).flat().length > 0)
-      ? extractedResumeSkills
-      : {};
-
-    allMissingSkills = (missingSkills && Object.values(missingSkills).flat().length > 0)
+      : extractedResumeSkills && Object.values(extractedResumeSkills).flat().length > 0
+      ? extractedResumeSkills : {};
+    allMissingSkills = missingSkills && Object.values(missingSkills).flat().length > 0
       ? missingSkills
-      : missingKeywords && missingKeywords.length > 0
-      ? { 'Missing Skills': missingKeywords }
-      : {};
-  } catch (err) {
-    console.error('Error processing skills:', err);
+      : missingKeywords?.length > 0 ? { 'Missing Skills': missingKeywords } : {};
+  } catch (e) {
     allMatchedSkills = matchedSkills || {};
     allMissingSkills = missingSkills || {};
   }
 
+  const totalMatched = Object.values(allMatchedSkills).flat().length;
+  const totalMissing = Object.values(allMissingSkills).flat().length;
+  const coveragePct = Math.round((totalMatched / (totalMatched + totalMissing || 1)) * 100);
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: '📊' },
-    { id: 'matched', label: 'Matched Skills', icon: '✅' },
-    { id: 'missing', label: 'Missing Skills', icon: '⚠️' },
-    { id: 'ats', label: 'ATS Insights', icon: '🔍' }
+    { id: 'matched', label: 'Matched', icon: '✅' },
+    { id: 'missing', label: 'Missing', icon: '⚠️' },
+    { id: 'ats', label: 'ATS Insights', icon: '🔍' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black py-8 px-4">
+      <div className="max-w-6xl mx-auto">
+
         {/* Header */}
         <div className="mb-8">
-          <div className="flex flex-wrap gap-4 mb-6">
+          <div className="flex flex-wrap gap-3 mb-6">
             <button
               onClick={onBackToAnalysis}
-              className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-all hover:shadow-lg"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-400 border border-white/8 hover:border-white/15 hover:text-white transition-all duration-200"
             >
               ← Back to Analysis
             </button>
             <button
               onClick={handleDownloadPDF}
               disabled={isDownloading}
-              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all hover:shadow-lg disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-blue-400 border border-blue-600/30 hover:bg-blue-600/10 hover:border-blue-500/50 transition-all duration-200 disabled:opacity-40"
             >
-              {isDownloading ? '⏳ Generating PDF...' : '📄 Download Report'}
+              {isDownloading ? '⏳ Generating...' : '📄 Download PDF'}
             </button>
             <button
               onClick={onHome}
-              className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg transition-all hover:shadow-lg"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all duration-200"
             >
-              🏠 Back to Home
+              🏠 Home
             </button>
           </div>
-          <h2 className="text-4xl font-bold text-white mb-2">
-            ✨ Analysis Results
+          <h2 className="text-3xl font-bold text-white">
+            Analysis <span className="text-blue-500">Results</span>
           </h2>
-          <p className="text-gray-300">
-            Your comprehensive resume-job description matching analysis
-          </p>
+          <p className="text-gray-500 text-sm mt-1">Your resume-job description matching report</p>
         </div>
 
-        {/* Main Score Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Match Percentage Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all">
-            <CircularProgress
-              percentage={matchPercentage}
-              label="Resume Match Score"
-            />
-            <p className="text-center text-sm text-gray-600 mt-4">
-              {matchPercentage >= 80
-                ? '🎉 Excellent Match!'
-                : matchPercentage >= 60
-                ? '👍 Good Match'
-                : '⚠️ Needs Improvement'}
-            </p>
+        {/* Score Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <div className="bg-[#0a0a0a] border border-white/6 rounded-xl p-8 flex items-center justify-center hover:border-blue-600/25 transition-all duration-200">
+            <CircularProgress percentage={matchPercentage} label="Resume Match Score" sublabel="TF-IDF Cosine Similarity" />
           </div>
-
-          {/* ATS Score Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all">
-            <CircularProgress
-              percentage={atsScore}
-              label="ATS Compatibility"
-            />
-            <p className="text-center text-sm text-gray-600 mt-4">
-              Keyword density & system optimization
-            </p>
+          <div className="bg-[#0a0a0a] border border-white/6 rounded-xl p-8 flex items-center justify-center hover:border-blue-600/25 transition-all duration-200">
+            <CircularProgress percentage={atsScore} label="ATS Compatibility" sublabel="Keyword & format analysis" />
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
-          <div className="flex flex-wrap border-b border-gray-200">
+        {/* Tab Panel */}
+        <div className="bg-[#0a0a0a] border border-white/6 rounded-xl overflow-hidden">
+
+          {/* Tab Nav */}
+          <div className="flex border-b border-white/6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-1 px-4 py-4 font-semibold transition-all text-sm md:text-base ${
+                className={`flex-1 px-3 py-3.5 text-sm font-semibold transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-b-4 border-blue-600'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-blue-600/15 text-blue-400 border-b-2 border-blue-500'
+                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/3 border-b-2 border-transparent'
                 }`}
               >
-                {tab.icon} {tab.label}
+                <span className="mr-1.5">{tab.icon}</span>
+                {tab.label}
               </button>
             ))}
           </div>
 
           {/* Tab Content */}
-          <div className="p-8">
-            {/* Overview Tab */}
+          <div className="p-6">
+
+            {/* ── Overview ── */}
             {activeTab === 'overview' && (
               <div className="space-y-6 animate-fadeIn">
-                {/* Experience Section */}
-                {experience && experience.resumeYears && (
-                  <div className={`p-6 rounded-xl border-2 ${getScoreBgLight(experience.matchScore)}`}>
-                    <h4 className="font-bold text-gray-800 mb-3">💼 Experience Match</h4>
-                    <div className="grid grid-cols-3 gap-4 mb-3">
+
+                {/* Experience */}
+                {experience?.resumeYears?.length > 0 && (
+                  <div className={`p-5 rounded-xl border ${experience.isQualified ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                    <h4 className="font-semibold text-white mb-4 flex items-center gap-2">
+                      💼 Experience Match
+                    </h4>
+                    <div className="grid grid-cols-3 gap-4">
                       <div>
-                        <p className="text-sm text-gray-600">Your Experience</p>
-                        <p className="text-2xl font-bold text-gray-800">{experience.resumeYears?.join(', ') || 'N/A'}</p>
+                        <p className="text-xs text-gray-500 mb-1">Your Experience</p>
+                        <p className="text-2xl font-bold text-white">{experience.resumeYears?.join(', ')} <span className="text-sm text-gray-400">yrs</span></p>
                       </div>
                       <div className="flex items-center justify-center">
-                        <div className={`text-3xl ${experience.isQualified ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl font-bold ${experience.isQualified ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
                           {experience.isQualified ? '✓' : '✗'}
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Required</p>
-                        <p className="text-2xl font-bold text-gray-800">{experience.requiredYears?.join(', ') || 'N/A'}</p>
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500 mb-1">Required</p>
+                        <p className="text-2xl font-bold text-white">{experience.requiredYears?.join(', ')} <span className="text-sm text-gray-400">yrs</span></p>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-700 font-semibold">{experience.message}</p>
+                    <p className={`text-sm mt-3 font-medium ${experience.isQualified ? 'text-emerald-400' : 'text-red-400'}`}>{experience.message}</p>
                   </div>
                 )}
 
                 {/* Score Breakdown */}
-                <div className="space-y-3">
-                  <h4 className="font-bold text-gray-800">📈 Score Breakdown</h4>
-                  {atsScoreBreakdown && atsScoreBreakdown.keywordDensity !== undefined ? (
-                    <>
-                      {/* Keyword Density */}
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-700">
-                            Keyword Density (40%)
-                          </span>
-                          <span className="text-sm font-bold text-gray-800">
-                            {atsScoreBreakdown.keywordDensity}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-blue-400 to-blue-600 h-full transition-all duration-1000"
-                            style={{
-                              width: animateProgress ? `${atsScoreBreakdown.keywordDensity}%` : '0%'
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Skills Presence */}
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-700">
-                            Skills Presence (30%)
-                          </span>
-                          <span className="text-sm font-bold text-gray-800">
-                            {atsScoreBreakdown.skillsPresence}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-purple-400 to-purple-600 h-full transition-all duration-1000"
-                            style={{
-                              width: animateProgress ? `${atsScoreBreakdown.skillsPresence}%` : '0%'
-                            }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Section Detection */}
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-700">
-                            Section Detection (20%)
-                          </span>
-                          <span className="text-sm font-bold text-gray-800">
-                            {atsScoreBreakdown.sectionDetection && atsScoreBreakdown.sectionDetection.score}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-green-400 to-green-600 h-full transition-all duration-1000"
-                            style={{
-                              width: animateProgress ? `${atsScoreBreakdown.sectionDetection && atsScoreBreakdown.sectionDetection.score}%` : '0%'
-                            }}
-                          />
-                        </div>
-                        <p className="text-xs text-gray-600 mt-1">
-                          Sections found: {atsScoreBreakdown.sectionDetection && atsScoreBreakdown.sectionDetection.detected && atsScoreBreakdown.sectionDetection.detected.join(', ') || 'None'}
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-white flex items-center gap-2">📈 Score Breakdown</h4>
+                  {atsScoreBreakdown?.keywordDensity !== undefined ? (
+                    <div className="space-y-3">
+                      <ScoreBar label="Keyword Density" weight="40%" value={atsScoreBreakdown.keywordDensity} color="bg-gradient-to-r from-blue-600 to-blue-400" />
+                      <ScoreBar label="Skills Presence" weight="30%" value={atsScoreBreakdown.skillsPresence} color="bg-gradient-to-r from-violet-600 to-violet-400" />
+                      <ScoreBar label="Section Detection" weight="20%" value={atsScoreBreakdown.sectionDetection?.score} color="bg-gradient-to-r from-emerald-600 to-emerald-400" />
+                      <ScoreBar label="Formatting Quality" weight="10%" value={atsScoreBreakdown.formattingIndicators} color="bg-gradient-to-r from-amber-600 to-amber-400" />
+                      {atsScoreBreakdown.sectionDetection?.detected?.length > 0 && (
+                        <p className="text-xs text-gray-600 pt-1">
+                          Sections found: <span className="text-gray-400">{atsScoreBreakdown.sectionDetection.detected.join(', ')}</span>
                         </p>
-                      </div>
-
-                      {/* Formatting */}
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-sm font-semibold text-gray-700">
-                            Formatting Quality (10%)
-                          </span>
-                          <span className="text-sm font-bold text-gray-800">
-                            {atsScoreBreakdown.formattingIndicators}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-gradient-to-r from-orange-400 to-orange-600 h-full transition-all duration-1000"
-                            style={{
-                              width: animateProgress ? `${atsScoreBreakdown.formattingIndicators}%` : '0%'
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </>
+                      )}
+                    </div>
                   ) : (
-                    <p className="text-gray-600">ATS breakdown data not available</p>
+                    <p className="text-gray-600 text-sm">ATS breakdown data not available</p>
                   )}
                 </div>
 
-                {/* Insights Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <p className="font-bold text-gray-800 mb-2">🎯 Assessment</p>
-                    <p className="text-sm text-gray-700">
-                      {matchPercentage >= 80
-                        ? 'Your resume is well-aligned with the job. Consider applying!'
-                        : matchPercentage >= 60
-                        ? 'Good alignment. Minor optimizations could help.'
-                        : 'Consider updating to better match requirements.'}
+                {/* Quick Insight Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div className="p-4 bg-[#0d0d0d] border-l-2 border-blue-500 rounded-r-xl rounded-l-sm">
+                    <p className="text-xs text-gray-500 mb-1">🎯 Assessment</p>
+                    <p className="text-sm text-gray-300">
+                      {matchPercentage >= 80 ? 'Well-aligned — consider applying!' : matchPercentage >= 60 ? 'Good fit. Minor optimizations could help.' : 'Update resume to better match requirements.'}
                     </p>
                   </div>
-                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <p className="font-bold text-gray-800 mb-2">🚀 Next Steps</p>
-                    <p className="text-sm text-gray-700">
-                      {missingKeywords.length > 0
-                        ? `Focus on: ${missingKeywords.slice(0, 2).join(', ')}`
-                        : 'Your resume is comprehensive!'}
+                  <div className="p-4 bg-[#0d0d0d] border-l-2 border-violet-500 rounded-r-xl rounded-l-sm">
+                    <p className="text-xs text-gray-500 mb-1">🚀 Next Steps</p>
+                    <p className="text-sm text-gray-300">
+                      {missingKeywords.length > 0 ? `Add: ${missingKeywords.slice(0, 2).join(', ')}` : 'Your resume is comprehensive!'}
                     </p>
                   </div>
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="font-bold text-gray-800 mb-2">📊 Coverage</p>
-                    <p className="text-sm text-gray-700">
-                      {Math.round((Object.values(allMatchedSkills).flat().length / (Object.values(allMissingSkills).flat().length + Object.values(allMatchedSkills).flat().length || 1)) * 100)}% skills coverage • {Object.values(allMissingSkills).flat().length} gaps
-                    </p>
+                  <div className="p-4 bg-[#0d0d0d] border-l-2 border-emerald-500 rounded-r-xl rounded-l-sm">
+                    <p className="text-xs text-gray-500 mb-1">📊 Coverage</p>
+                    <p className="text-sm text-gray-300">{coveragePct}% skills covered · <span className="text-red-400">{totalMissing} gap{totalMissing !== 1 ? 's' : ''}</span></p>
                   </div>
                 </div>
 
                 {/* Improvement Suggestions */}
-                {suggestions && suggestions.length > 0 && (
-                  <div className="mt-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl">
-                    <h4 className="font-bold text-gray-800 mb-4 flex items-center gap-2 text-lg">
-                      💡 Improvement Suggestions
-                    </h4>
-                    <ul className="space-y-3">
-                      {suggestions.map((suggestion, idx) => (
-                        <li key={idx} className="flex gap-3">
-                          <span className="text-amber-600 font-bold min-w-fit">→</span>
-                          <span className="text-gray-700 text-sm">{suggestion}</span>
+                {suggestions?.length > 0 && (
+                  <div className="p-5 bg-amber-500/5 border border-amber-500/15 rounded-xl">
+                    <h4 className="font-semibold text-amber-400 mb-3 flex items-center gap-2 text-sm">💡 Improvement Suggestions</h4>
+                    <ul className="space-y-2">
+                      {suggestions.map((s, i) => (
+                        <li key={i} className="flex gap-2 text-sm text-gray-400">
+                          <span className="text-amber-500 font-bold shrink-0">→</span>
+                          {s}
                         </li>
                       ))}
                     </ul>
@@ -397,190 +293,119 @@ export default function ResultsSection({ results, onBackToAnalysis, onHome }) {
               </div>
             )}
 
-            {/* Matched Skills Tab */}
+            {/* ── Matched Skills ── */}
             {activeTab === 'matched' && (
               <div className="space-y-4 animate-fadeIn">
-                {(() => {
-                  try {
-                    const hasSkills = allMatchedSkills && Object.entries(allMatchedSkills).some(([_, skills]) => Array.isArray(skills) && skills.length > 0);
-                    if (hasSkills) {
-                      return Object.entries(allMatchedSkills).map(([category, skills]) => {
-                        if (!Array.isArray(skills) || skills.length === 0) return null;
-                        return (
-                          <div key={category} className="border border-green-200 rounded-lg p-4 bg-green-50">
-                            <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
-                              ✅ {category}
-                              <span className="bg-green-200 text-green-900 text-xs font-bold px-2 py-1 rounded-full">
-                                {skills.length}
-                              </span>
-                            </h4>
-                            <div className="flex flex-wrap gap-2">
-                              {skills.map((skill, idx) => (
-                                <span
-                                  key={idx}
-                                  className="px-4 py-2 bg-green-100 text-green-900 rounded-full text-sm font-semibold hover:bg-green-200 transition-all"
-                                >
-                                  {skill}
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      });
-                    } else {
-                      return (
-                        <div className="p-6 text-center text-gray-500">
-                          <p>No matched skills found</p>
-                        </div>
-                      );
-                    }
-                  } catch (err) {
-                    console.error('Error rendering matched skills:', err);
+                {Object.entries(allMatchedSkills).some(([, s]) => Array.isArray(s) && s.length > 0) ? (
+                  Object.entries(allMatchedSkills).map(([category, skills]) => {
+                    if (!Array.isArray(skills) || skills.length === 0) return null;
                     return (
-                      <div className="p-6 text-center text-red-500">
-                        <p>Error loading matched skills. Please try again.</p>
-                      </div>
-                    );
-                  }
-                })()}
-              </div>
-            )}
-
-            {/* Missing Skills Tab */}
-            {activeTab === 'missing' && (
-              <div className="space-y-4 animate-fadeIn">
-                {Object.keys(allMissingSkills).length > 0 &&
-                Object.values(allMissingSkills).flat().length > 0 ? (
-                  Object.entries(allMissingSkills).map(([category, skills]) => (
-                    skills.length > 0 && (
-                      <div key={category} className="border border-red-200 rounded-lg p-4 bg-red-50">
-                        <h4 className="font-bold text-red-900 mb-3 flex items-center gap-2">
-                          ⚠️ {category}
-                          <span className="bg-red-200 text-red-900 text-xs font-bold px-2 py-1 rounded-full">
+                      <div key={category} className="bg-[#0d0d0d] border border-emerald-500/15 rounded-xl p-5">
+                        <h4 className="font-semibold text-white mb-3 flex items-center gap-2 text-sm">
+                          <span className="text-emerald-400">✅</span> {category}
+                          <span className="ml-auto bg-emerald-500/15 text-emerald-400 text-xs font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">
                             {skills.length}
                           </span>
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {skills.map((skill, idx) => (
-                            <span
-                              key={idx}
-                              className="px-4 py-2 bg-red-100 text-red-900 rounded-full text-sm font-semibold hover:bg-red-200 transition-all"
-                            >
+                            <span key={idx} className="px-3 py-1 bg-emerald-500/8 text-emerald-300 border border-emerald-500/20 rounded-full text-xs font-medium hover:bg-emerald-500/15 transition-colors">
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="p-8 text-center text-gray-600">
+                    <p className="text-3xl mb-2">🔍</p>
+                    <p>No matched skills found</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Missing Skills ── */}
+            {activeTab === 'missing' && (
+              <div className="space-y-4 animate-fadeIn">
+                {Object.values(allMissingSkills).flat().length > 0 ? (
+                  Object.entries(allMissingSkills).map(([category, skills]) =>
+                    skills.length > 0 && (
+                      <div key={category} className="bg-[#0d0d0d] border border-red-500/15 rounded-xl p-5">
+                        <h4 className="font-semibold text-white mb-3 flex items-center gap-2 text-sm">
+                          <span className="text-red-400">⚠️</span> {category}
+                          <span className="ml-auto bg-red-500/15 text-red-400 text-xs font-bold px-2 py-0.5 rounded-full border border-red-500/20">
+                            {skills.length}
+                          </span>
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                          {skills.map((skill, idx) => (
+                            <span key={idx} className="px-3 py-1 bg-red-500/8 text-red-300 border border-red-500/20 rounded-full text-xs font-medium hover:bg-red-500/15 transition-colors">
                               {skill}
                             </span>
                           ))}
                         </div>
                       </div>
                     )
-                  ))
+                  )
                 ) : (
-                  <div className="p-6 text-center text-green-600">
-                    <p>🎉 No missing skills! You have everything required.</p>
+                  <div className="p-8 text-center text-gray-600">
+                    <p className="text-3xl mb-2">🎉</p>
+                    <p className="text-emerald-400 font-medium">No missing skills! You have everything required.</p>
                   </div>
                 )}
               </div>
             )}
 
-            {/* ATS Insights Tab */}
+            {/* ── ATS Insights ── */}
             {activeTab === 'ats' && (
               <div className="space-y-4 animate-fadeIn">
-                {(() => {
-                  try {
-                    const hasAtsData = atsScoreBreakdown && 
-                      (atsScoreBreakdown.keywordDensity !== undefined || atsScoreBreakdown.breakdown?.keywordDensity !== undefined);
-                    
-                    if (hasAtsData) {
-                      // Handle both direct and nested breakdown structures
-                      const breakdown = atsScoreBreakdown.breakdown || atsScoreBreakdown;
-                      
-                      return (
-                        <>
-                          <div className="p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                            <h4 className="font-bold text-gray-800 mb-4">🔍 ATS Score Analysis</h4>
-                            <div className="space-y-4">
-                              <div className="flex items-center justify-between">
-                                <span className="text-gray-700 font-semibold">Final ATS Score:</span>
-                                <span className={`text-3xl font-bold ${getScoreColor(atsScore)}`}>
-                                  {atsScore}%
-                                </span>
-                              </div>
-
-                              <div className="pt-4 border-t border-blue-200">
-                                <p className="text-sm text-gray-600 mb-3">Score Composition:</p>
-                                <ul className="space-y-2 text-sm">
-                                  <li className="flex justify-between">
-                                    <span className="text-gray-700">• Keyword Density (40%)</span>
-                                    <span className="font-bold text-blue-600">{breakdown?.keywordDensity || 'N/A'}</span>
-                                  </li>
-                                  <li className="flex justify-between">
-                                    <span className="text-gray-700">• Skills Presence (30%)</span>
-                                    <span className="font-bold text-purple-600">{breakdown?.skillsPresence || 'N/A'}</span>
-                                  </li>
-                                  <li className="flex justify-between">
-                                    <span className="text-gray-700">• Section Detection (20%)</span>
-                                    <span className="font-bold text-green-600">{breakdown?.sectionDetection?.score || 'N/A'}</span>
-                                  </li>
-                                  <li className="flex justify-between">
-                                    <span className="text-gray-700">• Formatting Quality (10%)</span>
-                                    <span className="font-bold text-orange-600">{breakdown?.formattingIndicators || 'N/A'}</span>
-                                  </li>
-                                </ul>
-                              </div>
+                {atsScoreBreakdown?.keywordDensity !== undefined ? (() => {
+                  const bd = atsScoreBreakdown.breakdown || atsScoreBreakdown;
+                  return (
+                    <>
+                      <div className="bg-[#0d0d0d] border border-blue-600/20 rounded-xl p-5">
+                        <div className="flex items-center justify-between mb-5">
+                          <h4 className="font-semibold text-white text-sm">🔍 ATS Score Analysis</h4>
+                          <span className={`text-2xl font-bold ${getScoreColor(atsScore)}`}>{atsScore}%</span>
+                        </div>
+                        <div className="space-y-3">
+                          {[
+                            { label: 'Keyword Density', weight: '40%', val: bd?.keywordDensity, color: 'text-blue-400' },
+                            { label: 'Skills Presence', weight: '30%', val: bd?.skillsPresence, color: 'text-violet-400' },
+                            { label: 'Section Detection', weight: '20%', val: bd?.sectionDetection?.score, color: 'text-emerald-400' },
+                            { label: 'Formatting Quality', weight: '10%', val: bd?.formattingIndicators, color: 'text-amber-400' },
+                          ].map((row) => (
+                            <div key={row.label} className="flex items-center justify-between py-2 border-b border-white/4 last:border-0">
+                              <span className="text-sm text-gray-400">{row.label} <span className="text-gray-600 text-xs">({row.weight})</span></span>
+                              <span className={`font-bold text-sm ${row.color}`}>{row.val ?? 'N/A'}{row.val !== undefined ? '%' : ''}</span>
                             </div>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
 
-                          <div className="p-6 bg-gray-50 rounded-lg border border-gray-200">
-                            <h4 className="font-bold text-gray-800 mb-3">💡 Recommendations</h4>
-                            <ul className="space-y-2 text-sm text-gray-700">
-                              {breakdown?.keywordDensity < 70 && (
-                                <li>• ⚠️ Increase keyword density: Add more relevant technical terms from the job description</li>
-                              )}
-                              {breakdown?.skillsPresence < 70 && (
-                                <li>• ⚠️ Highlight more required skills: Ensure all relevant skills are visible</li>
-                              )}
-                              {breakdown?.sectionDetection?.score < 70 && (
-                                <li>• ⚠️ Add standard sections: Include Education, Experience, Skills sections</li>
-                              )}
-                              {breakdown?.formattingIndicators < 70 && (
-                                <li>• ⚠️ Improve formatting: Use bullet points and clear section headers</li>
-                              )}
-                              {atsScore >= 80 && (
-                                <li>✅ Great job! Your resume is well-optimized for ATS systems</li>
-                              )}
-                            </ul>
-                          </div>
-                        </>
-                      );
-                    } else {
-                      return <p className="text-gray-600">ATS insights not available - please check console for details</p>;
-                    }
-                  } catch (err) {
-                    console.error('Error rendering ATS insights:', err, 'atsScoreBreakdown:', atsScoreBreakdown);
-                    return <p className="text-red-600">Error loading ATS insights. Check console for details.</p>;
-                  }
-                })()}
+                      <div className="bg-[#0d0d0d] border border-white/6 rounded-xl p-5">
+                        <h4 className="font-semibold text-white text-sm mb-3">💡 Recommendations</h4>
+                        <ul className="space-y-2">
+                          {bd?.keywordDensity < 70 && <li className="text-sm text-gray-400 flex gap-2"><span className="text-yellow-500">⚠️</span> Increase keyword density — add relevant technical terms from the JD</li>}
+                          {bd?.skillsPresence < 70 && <li className="text-sm text-gray-400 flex gap-2"><span className="text-yellow-500">⚠️</span> Highlight more required skills — ensure all relevant skills are visible</li>}
+                          {bd?.sectionDetection?.score < 70 && <li className="text-sm text-gray-400 flex gap-2"><span className="text-yellow-500">⚠️</span> Add standard sections — Education, Experience, Skills</li>}
+                          {bd?.formattingIndicators < 70 && <li className="text-sm text-gray-400 flex gap-2"><span className="text-yellow-500">⚠️</span> Improve formatting — use bullet points and clear section headers</li>}
+                          {atsScore >= 80 && <li className="text-sm text-emerald-400 flex gap-2"><span>✅</span> Great job! Your resume is well-optimized for ATS systems</li>}
+                        </ul>
+                      </div>
+                    </>
+                  );
+                })() : (
+                  <p className="text-gray-600 text-sm">ATS insights not available</p>
+                )}
               </div>
             )}
+
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 }
