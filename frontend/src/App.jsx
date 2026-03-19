@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
 import Dashboard from './pages/Dashboard';
+import ResumeBuilderPage from './pages/ResumeBuilderPage';
 
 export default function App() {
   return (
@@ -27,6 +28,12 @@ export default function App() {
               <Dashboard />
             </div>
           }
+        />
+
+        {/* Resume Builder Route */}
+        <Route
+          path="/resume-builder"
+          element={<ResumeBuilderPage />}
         />
       </Routes>
     </Router>
