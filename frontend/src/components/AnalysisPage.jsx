@@ -77,79 +77,75 @@ export default function AnalysisPage({ onBack }) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 py-8 px-4">
+    <div className="min-h-screen bg-black py-8 px-4">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={onBack}
-            className="mb-4 px-4 py-2 bg-purple-500/20 hover:bg-purple-500/40 text-purple-300 border border-purple-500/50 rounded-lg transition flex items-center gap-2"
+            className="mb-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-500 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-200"
           >
-            ← Back to Home
+            ← Back to Dashboard
           </button>
-          <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-            Resume Analysis Engine
+          <h2 className="text-3xl font-bold text-white">
+            Resume <span className="text-blue-500">Analysis Engine</span>
           </h2>
-          <p className="text-purple-200 mt-2">
-            Get intelligent insights on how your resume matches the job
+          <p className="text-gray-500 mt-1 text-sm">
+            Paste your resume and job description to get intelligent match insights
           </p>
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-950/30 border border-red-500/50 rounded-lg text-red-300 flex items-start gap-3">
-            <span className="text-xl">⚠️</span>
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/25 rounded-xl text-red-400 flex items-start gap-3">
+            <span className="text-lg mt-0.5">⚠️</span>
             <div>
-              <p className="font-semibold">Error:</p>
-              <p className="text-sm">{error}</p>
+              <p className="font-semibold text-sm">Error</p>
+              <p className="text-sm text-red-400/80">{error}</p>
             </div>
           </div>
         )}
 
         {/* Input Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
           {/* Resume Input */}
-          <div className="bg-slate-900/50 border border-purple-500/30 rounded-xl p-6 hover:border-purple-500/60 transition">
-            <label className="block text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-3">
+          <div className="bg-[#0a0a0a] border border-white/6 rounded-xl p-6 hover:border-blue-600/25 transition-all duration-200">
+            <label className="block text-sm font-semibold text-white mb-3">
               📄 Your Resume
             </label>
             <textarea
               value={resume}
               onChange={(e) => setResume(e.target.value)}
               placeholder="Paste your entire resume here..."
-              className="w-full h-64 p-4 bg-slate-800 border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm text-white placeholder-gray-500 transition"
+              className="w-full h-64 p-4 bg-[#111] border border-white/6 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600/50 focus:border-blue-600/40 resize-none font-mono text-sm text-white placeholder-gray-700 transition-all"
             />
-            <p className="text-xs text-purple-300 mt-2">
-              Include all skills, experience, education, and certifications
-            </p>
+            <p className="text-xs text-gray-600 mt-2">Include skills, experience, education, and certifications</p>
           </div>
 
           {/* Job Description Input */}
-          <div className="bg-slate-900/50 border border-purple-500/30 rounded-xl p-6 hover:border-purple-500/60 transition">
-            <label className="block text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-3">
+          <div className="bg-[#0a0a0a] border border-white/6 rounded-xl p-6 hover:border-blue-600/25 transition-all duration-200">
+            <label className="block text-sm font-semibold text-white mb-3">
               💼 Job Description
             </label>
             <textarea
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste the job description here..."
-              className="w-full h-64 p-4 bg-slate-800 border border-purple-500/30 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none font-mono text-sm text-white placeholder-gray-500 transition"
+              className="w-full h-64 p-4 bg-[#111] border border-white/6 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600/50 focus:border-blue-600/40 resize-none font-mono text-sm text-white placeholder-gray-700 transition-all"
             />
-            <p className="text-xs text-purple-300 mt-2">
-              Include job title, responsibilities, requirements, and qualifications
-            </p>
+            <p className="text-xs text-gray-600 mt-2">Include title, responsibilities, requirements, and qualifications</p>
           </div>
         </div>
 
         {/* Analyze Button */}
-        <div className="flex justify-center mb-8">
+        <div className="flex flex-col items-center gap-4 mb-6">
           <button
             onClick={handleAnalyze}
             disabled={loading}
-            className={`px-12 py-4 rounded-lg font-bold text-white text-lg transition transform ${
+            className={`px-12 py-4 rounded-xl font-bold text-white text-lg transition-all duration-200 ${
               loading
-                ? 'bg-gray-600 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 hover:shadow-lg hover:shadow-purple-500/50 hover:scale-105'
+                ? 'bg-blue-900/50 cursor-not-allowed text-blue-400'
+                : 'bg-blue-600 hover:bg-blue-500 shadow-xl shadow-blue-600/25 hover:shadow-blue-500/35 hover:scale-105'
             }`}
           >
             {loading ? (
@@ -161,10 +157,7 @@ export default function AnalysisPage({ onBack }) {
               '🔍 Analyze Resume'
             )}
           </button>
-        </div>
 
-        {/* Sample Data Button */}
-        <div className="text-center">
           <button
             onClick={() => {
               setResume(`Senior Software Engineer
@@ -238,7 +231,7 @@ BENEFITS
 - Health and wellness benefits`);
               setError(null);
             }}
-            className="text-purple-400 hover:text-purple-300 font-semibold underline decoration-purple-500/50 hover:decoration-purple-400 transition"
+            className="text-gray-600 hover:text-blue-400 text-sm font-medium transition-colors duration-200"
           >
             📋 Load Sample Data
           </button>
@@ -247,3 +240,4 @@ BENEFITS
     </div>
   );
 }
+

@@ -20,6 +20,11 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 const analyzeRoutes = require('./routes/analyze');
 const historyRoutes = require('./routes/history');
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({ message: 'Welcome to ResuWise Backend API', version: '1.0.0', endpoints: { analyze: '/api/analyze', history: '/api/history', health: '/health' } });
+});
+
 app.use('/api/analyze', analyzeRoutes);
 app.use('/api/history', historyRoutes);
 

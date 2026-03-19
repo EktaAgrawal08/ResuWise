@@ -39,97 +39,83 @@ export default function AnalysisHistory({ onSelectAnalysis, currentAnalysisId })
   };
 
   return (
-    <div className="fixed left-0 top-0 h-full w-80 bg-gradient-to-b from-slate-900 to-purple-950 shadow-2xl overflow-y-auto z-40 border-r border-purple-500/30">
-      <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 shadow">
-        <h3 className="text-lg font-bold">📋 Analysis History</h3>
-        <p className="text-sm text-purple-100 mt-1">Your recent analyses</p>
+    <div className="fixed left-0 top-0 h-full w-80 bg-[#050505] shadow-2xl overflow-y-auto z-40 border-r border-white/6">
+      {/* Header */}
+      <div className="sticky top-0 bg-[#080808] border-b border-white/6 p-4">
+        <h3 className="text-sm font-bold text-white">📋 Analysis History</h3>
+        <p className="text-xs text-gray-600 mt-0.5">Your recent analyses</p>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-2">
         {history.length > 0 ? (
           <>
             {history.map((analysis) => (
               <div
                 key={analysis.id}
                 onClick={() => onSelectAnalysis(analysis.fullResults)}
-                className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                className={`p-3 rounded-xl border cursor-pointer transition-all duration-200 ${
                   currentAnalysisId === analysis.id
-                    ? 'bg-purple-500/20 border-purple-500 shadow-md'
-                    : 'bg-slate-800/50 border-purple-500/30 hover:border-purple-500/60'
+                    ? 'bg-blue-600/10 border-blue-600/40 shadow-md shadow-blue-600/10'
+                    : 'bg-[#0a0a0a] border-white/5 hover:border-blue-600/20 hover:bg-[#0d0d0d]'
                 }`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-xs text-purple-300">{analysis.dateForDisplay}</div>
+                <div className="flex justify-between items-center mb-2">
+                  <div className="text-[11px] text-gray-600">{analysis.dateForDisplay}</div>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDelete(analysis.id);
-                    }}
-                    className="text-purple-400 hover:text-red-500 transition"
+                    onClick={(e) => { e.stopPropagation(); handleDelete(analysis.id); }}
+                    className="text-gray-700 hover:text-red-400 transition-colors text-xs"
                   >
                     ✕
                   </button>
                 </div>
                 <div className="space-y-1">
-                  <div className="flex justify-between">
-                    <span className="text-sm font-semibold text-purple-200">Match:</span>
-                    <span className={`text-sm font-bold ${getScoreColor(analysis.matchPercentage)}`}>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500">Match</span>
+                    <span className={`text-xs font-bold ${getScoreColor(analysis.matchPercentage)}`}>
                       {analysis.matchPercentage}%
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-sm font-semibold text-purple-200">ATS:</span>
-                    <span className={`text-sm font-bold ${getScoreColor(analysis.atsScore)}`}>
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500">ATS</span>
+                    <span className={`text-xs font-bold ${getScoreColor(analysis.atsScore)}`}>
                       {analysis.atsScore}%
                     </span>
                   </div>
                 </div>
-                <div className="mt-2 text-xs text-purple-300 truncate">
-                  Resume: {analysis.resumePreview}
-                </div>
+                <div className="mt-2 text-[11px] text-gray-600 truncate">{analysis.resumePreview}</div>
               </div>
             ))}
 
             {/* Action Buttons */}
-            <div className="mt-4 pt-4 border-t border-purple-500/30 space-y-2">
+            <div className="pt-3 border-t border-white/5 space-y-2 mt-2">
               <button
                 onClick={() => exportHistoryAsJSON()}
-                className="w-full px-3 py-2 bg-green-500/20 text-green-400 hover:bg-green-500/40 border border-green-500/40 rounded-lg transition text-sm font-semibold"
+                className="w-full px-3 py-2 bg-green-500/8 text-green-500 hover:bg-green-500/15 border border-green-500/20 rounded-lg transition-all text-xs font-semibold"
               >
                 📥 Export as JSON
               </button>
               <button
                 onClick={() => setShowConfirm(true)}
-                className="w-full px-3 py-2 bg-red-500/20 text-red-400 hover:bg-red-500/40 border border-red-500/40 rounded-lg transition text-sm font-semibold"
+                className="w-full px-3 py-2 bg-red-500/8 text-red-400 hover:bg-red-500/15 border border-red-500/20 rounded-lg transition-all text-xs font-semibold"
               >
                 🗑️ Clear History
               </button>
             </div>
 
             {showConfirm && (
-              <div className="mt-2 p-3 bg-red-950/30 border border-red-500/50 rounded">
-                <p className="text-sm text-red-300 mb-2">Delete all history?</p>
+              <div className="mt-2 p-3 bg-[#0f0808] border border-red-500/25 rounded-xl">
+                <p className="text-xs text-red-400 mb-2">Delete all history?</p>
                 <div className="flex gap-2">
-                  <button
-                    onClick={handleClearAll}
-                    className="flex-1 px-2 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded transition"
-                  >
-                    Yes
-                  </button>
-                  <button
-                    onClick={() => setShowConfirm(false)}
-                    className="flex-1 px-2 py-1 bg-slate-600 hover:bg-slate-700 text-white text-xs font-bold rounded transition"
-                  >
-                    No
-                  </button>
+                  <button onClick={handleClearAll} className="flex-1 px-2 py-1.5 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-lg transition">Yes</button>
+                  <button onClick={() => setShowConfirm(false)} className="flex-1 px-2 py-1.5 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded-lg transition">No</button>
                 </div>
               </div>
             )}
           </>
         ) : (
-          <div className="text-center py-8">
-            <p className="text-purple-400 text-sm">No analyses yet</p>
-            <p className="text-purple-300/60 text-xs mt-2">Your analyses will appear here</p>
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-sm">No analyses yet</p>
+            <p className="text-gray-700 text-xs mt-1">Your analyses will appear here</p>
           </div>
         )}
       </div>

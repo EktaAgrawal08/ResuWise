@@ -11,7 +11,7 @@ export default function App() {
         <Route
           path="/"
           element={
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 flex flex-col">
+            <div className="min-h-screen bg-gradient-to-br from-black to-black flex flex-col">
               <Navbar />
               <HomePage />
             </div>
@@ -22,7 +22,7 @@ export default function App() {
         <Route
           path="/dashboard"
           element={
-            <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950">
+            <div className="min-h-screen bg-gradient-to-br from-black to-black">
               <Navbar />
               <Dashboard />
             </div>

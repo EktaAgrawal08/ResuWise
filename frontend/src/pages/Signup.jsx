@@ -109,177 +109,147 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      {/* Subtle glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-blue-600/8 blur-[100px] pointer-events-none"></div>
+
+      <div className="relative max-w-md w-full">
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
-          className="mb-4 flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-sm font-medium"
+          className="mb-6 flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm font-medium"
         >
           ← Back to Home
         </button>
 
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="text-5xl font-black mb-3">🚀</div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-2">
-            ResuWise
-          </h1>
-          <p className="text-purple-300">AI Resume Intelligence Platform</p>
+        <div className="text-center mb-8">
+          <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-500 items-center justify-center text-2xl shadow-xl shadow-blue-600/30 mb-4">
+            🚀
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">ResuWise</h1>
+          <p className="text-gray-500 text-sm">AI Resume Intelligence Platform</p>
         </div>
 
         {/* Signup Form Card */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
-          <h2 className="text-2xl font-bold text-white mb-6">Create Account</h2>
+        <div className="bg-[#0a0a0a] border border-white/8 rounded-2xl p-8 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <h2 className="text-xl font-bold text-white mb-6">Create Account</h2>
 
-          {/* Success Message */}
           {success && (
-            <div className="mb-4 p-4 bg-green-500/20 border border-green-500/50 rounded-lg animate-pulse">
-              <p className="text-green-200 text-sm font-medium">
-                {successMessage}
-              </p>
+            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+              <p className="text-green-400 text-sm">{successMessage}</p>
             </div>
           )}
 
-          {/* Error Messages */}
           {errors.length > 0 && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
               {errors.map((error, idx) => (
-                <p key={idx} className="text-red-200 text-sm font-medium">
-                  • {error}
-                </p>
+                <p key={idx} className="text-red-400 text-sm">• {error}</p>
               ))}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Full Name
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="John Doe"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
             </div>
 
-            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
 
-              {/* Password Requirements */}
               {password && passwordStrength && (
                 <div className="mt-3 space-y-2">
-                  {/* Strength Bar */}
                   <div className="flex items-center gap-2">
-                    <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
+                    <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
                       <div
                         className={`h-full ${getPasswordStrengthColor()} transition-all`}
-                        style={{
-                          width: `${passwordStrength.data?.strength || 0}%`
-                        }}
+                        style={{ width: `${passwordStrength.data?.strength || 0}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs font-semibold text-purple-300">
+                    <span className="text-xs font-medium text-gray-400">
                       {passwordStrength.data?.strengthLevel}
                     </span>
                   </div>
-
-                  {/* Requirements List */}
                   <div className="text-xs space-y-1">
                     {passwordStrength.data?.errors?.length > 0 ? (
                       passwordStrength.data.errors.map((error, idx) => (
-                        <div key={idx} className="text-red-400 flex items-center gap-1">
-                          ✗ {error}
-                        </div>
+                        <div key={idx} className="text-red-400 flex items-center gap-1">✗ {error}</div>
                       ))
                     ) : (
-                      <div className="text-green-400 flex items-center gap-1">
-                        ✓ Password meets all requirements
-                      </div>
+                      <div className="text-green-400 flex items-center gap-1">✓ Password meets all requirements</div>
                     )}
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Confirm Password
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Confirm Password</label>
               <input
                 type="password"
                 value={passwordConfirm}
                 onChange={(e) => setPasswordConfirm(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
               {password && passwordConfirm && password !== passwordConfirm && (
                 <p className="text-red-400 text-xs mt-1">Passwords do not match</p>
               )}
             </div>
 
-            {/* Terms Checkbox */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <input
                 type="checkbox"
                 checked={agreeToTerms}
                 onChange={(e) => setAgreeToTerms(e.target.checked)}
-                className="w-4 h-4 rounded cursor-pointer"
+                className="w-4 h-4 rounded cursor-pointer accent-blue-600"
               />
-              <label className="text-sm text-purple-300 cursor-pointer">
+              <label className="text-sm text-gray-500 cursor-pointer">
                 I agree to terms and conditions
               </label>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-6 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 disabled:from-purple-500/50 disabled:to-blue-600/50 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 transform hover:-translate-y-0.5 disabled:transform-none"
+              className="w-full mt-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-500/35"
             >
               {isLoading ? 'Creating Account...' : 'Sign Up'}
             </button>
           </form>
 
-          {/* Login Link */}
-          <p className="text-center text-purple-300 text-sm mt-6">
+          <p className="text-center text-gray-600 text-sm mt-6">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-semibold">
-              Login
-            </Link>
+            <Link to="/login" className="text-blue-500 hover:text-blue-400 font-semibold">Login</Link>
           </p>
         </div>
       </div>
     </div>
   );
 }
+

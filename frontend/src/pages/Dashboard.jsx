@@ -7,100 +7,79 @@ export default function Dashboard() {
   const [showHistory, setShowHistory] = useState(false);
   const [currentAnalysisId, setCurrentAnalysisId] = useState(null);
 
-  const handleStartAnalysis = () => {
-    setCurrentPage('analysis');
-  };
-
-  const handleBackHome = () => {
-    setCurrentPage('home');
-    setShowHistory(false);
-  };
-
+  const handleStartAnalysis  = () => setCurrentPage('analysis');
+  const handleBackHome = () => { setCurrentPage('home'); setShowHistory(false); };
   const handleSelectAnalysis = (analysisData) => {
-    // Store the analysis data in a way that AnalysisPage can restore it
     sessionStorage.setItem('restoredAnalysis', JSON.stringify(analysisData));
     setCurrentPage('analysis');
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 flex">
-      {/* History Sidebar */}
+    <div className="min-h-screen bg-black flex">
       {showHistory && (
-        <AnalysisHistory 
+        <AnalysisHistory
           onSelectAnalysis={handleSelectAnalysis}
           currentAnalysisId={currentAnalysisId}
         />
       )}
-      
-      {/* Main Content */}
+
       <div className={`flex-1 transition-all ${showHistory ? 'ml-80' : ''}`}>
         {currentPage === 'home' ? (
-          <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 p-8">
+          <div className="min-h-screen bg-black p-8">
             <div className="max-w-4xl mx-auto">
-              {/* Welcome Section */}
+
+              {/* Welcome */}
               <div className="mb-12">
-                <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-4">
-                  Welcome to ResuWise! 👋
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-3">
+                  Welcome to <span className="text-blue-500">ResuWise</span> 👋
                 </h1>
-                <p className="text-purple-300 text-lg">
-                  Ready to get AI-powered resume insights? Start by uploading your resume or pasting text.
+                <p className="text-gray-500 text-lg">
+                  Ready to get AI-powered resume insights? Start by uploading your resume.
                 </p>
               </div>
 
               {/* Quick Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
-                <div className="bg-slate-900/50 border border-purple-500/20 rounded-xl p-6 hover:border-purple-400/50 transition-all">
-                  <div className="text-3xl font-black mb-2">📊</div>
-                  <h3 className="text-white font-semibold mb-2">AI Analysis</h3>
-                  <p className="text-purple-300 text-sm">Get detailed resume-JD matching scores</p>
-                </div>
-
-                <div className="bg-slate-900/50 border border-purple-500/20 rounded-xl p-6 hover:border-purple-400/50 transition-all">
-                  <div className="text-3xl font-black mb-2">📋</div>
-                  <h3 className="text-white font-semibold mb-2">History</h3>
-                  <p className="text-purple-300 text-sm">Access all your previous analyses</p>
-                </div>
-
-                <div className="bg-slate-900/50 border border-purple-500/20 rounded-xl p-6 hover:border-purple-400/50 transition-all">
-                  <div className="text-3xl font-black mb-2">🔒</div>
-                  <h3 className="text-white font-semibold mb-2">Private</h3>
-                  <p className="text-purple-300 text-sm">All your data is encrypted and secure</p>
-                </div>
+                {[
+                  { icon: '📊', title: 'AI Analysis', desc: 'Get detailed resume-JD matching scores' },
+                  { icon: '📋', title: 'History', desc: 'Access all your previous analyses' },
+                  { icon: '🔒', title: 'Private', desc: 'All your data is encrypted and secure' },
+                ].map((card, i) => (
+                  <div key={i} className="bg-[#0a0a0a] border border-white/6 rounded-xl p-6 hover:border-blue-600/25 transition-all duration-200">
+                    <div className="text-3xl mb-3">{card.icon}</div>
+                    <h3 className="text-white font-semibold mb-1">{card.title}</h3>
+                    <p className="text-gray-600 text-sm">{card.desc}</p>
+                  </div>
+                ))}
               </div>
 
-              {/* CTA Button */}
-              <div className="text-center">
+              {/* CTA */}
+              <div className="text-center mb-16">
                 <button
                   onClick={handleStartAnalysis}
-                  className="px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-bold text-lg rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 transform hover:-translate-y-1"
+                  className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg rounded-xl transition-all duration-200 shadow-xl shadow-blue-600/25 hover:shadow-blue-500/35"
                 >
                   🚀 Start Analysis
                 </button>
               </div>
 
-              {/* Features Section */}
-              <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-slate-900/30 border border-purple-500/20 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-white mb-3">✨ Smart Features</h3>
-                  <ul className="text-purple-300 space-y-2 text-sm">
-                    <li>✓ ATS Score Calculation</li>
-                    <li>✓ Skill Gap Analysis</li>
-                    <li>✓ Keyword Matching</li>
-                    <li>✓ Experience Scoring</li>
-                    <li>✓ PDF Download</li>
-                  </ul>
-                </div>
-
-                <div className="bg-slate-900/30 border border-purple-500/20 rounded-xl p-6">
-                  <h3 className="text-xl font-bold text-white mb-3">🎯 How It Works</h3>
-                  <ul className="text-purple-300 space-y-2 text-sm">
-                    <li>1. Upload resume or paste text</li>
-                    <li>2. Add job description</li>
-                    <li>3. Get AI analysis instantly</li>
-                    <li>4. Review recommendations</li>
-                    <li>5. Download as PDF</li>
-                  </ul>
-                </div>
+              {/* Features */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                {[
+                  { title: '✨ Smart Features', items: ['ATS Score Calculation', 'Skill Gap Analysis', 'Keyword Matching', 'Experience Scoring', 'PDF Download'] },
+                  { title: '🎯 How It Works', items: ['Upload resume or paste text', 'Add job description', 'Get AI analysis instantly', 'Review recommendations', 'Download as PDF'] },
+                ].map((panel, i) => (
+                  <div key={i} className="bg-[#0a0a0a] border border-white/6 rounded-xl p-6">
+                    <h3 className="text-lg font-bold text-white mb-4">{panel.title}</h3>
+                    <ul className="text-gray-500 space-y-2 text-sm">
+                      {panel.items.map((item, j) => (
+                        <li key={j} className="flex items-center gap-2">
+                          <span className="text-blue-600 text-xs">●</span>{item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -111,3 +90,5 @@ export default function Dashboard() {
     </div>
   );
 }
+
+

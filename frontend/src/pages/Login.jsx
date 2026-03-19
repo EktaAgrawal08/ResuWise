@@ -51,107 +51,90 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 to-purple-950 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+      {/* Subtle glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-blue-600/8 blur-[100px] pointer-events-none"></div>
+
+      <div className="relative max-w-md w-full">
         {/* Back Button */}
         <button
           onClick={() => navigate('/')}
-          className="mb-4 flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-sm font-medium"
+          className="mb-6 flex items-center gap-2 text-gray-500 hover:text-white transition-colors text-sm font-medium"
         >
           ← Back to Home
         </button>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl font-black mb-3">🚀</div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 mb-2">
-            ResuWise
-          </h1>
-          <p className="text-purple-300">AI Resume Intelligence Platform</p>
+          <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-500 items-center justify-center text-2xl shadow-xl shadow-blue-600/30 mb-4">
+            🚀
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-1">ResuWise</h1>
+          <p className="text-gray-500 text-sm">AI Resume Intelligence Platform</p>
         </div>
 
         {/* Login Form Card */}
-        <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-2xl font-bold text-white mb-6">Login</h2>
+        <div className="bg-[#0a0a0a] border border-white/8 rounded-2xl p-8 shadow-2xl">
+          <h2 className="text-xl font-bold text-white mb-6">Welcome back</h2>
 
-          {/* Error Messages */}
           {credentialError && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg">
-              <p className="text-red-200 text-sm font-medium">{credentialError}</p>
+            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-400 text-sm">{credentialError}</p>
             </div>
           )}
 
           {attemptsInfo && (
-            <div
-              className={`mb-4 p-3 rounded-lg border ${
-                attemptsInfo.type === 'locked'
-                  ? 'bg-red-500/20 border-red-500/50'
-                  : 'bg-yellow-500/20 border-yellow-500/50'
-              }`}
-            >
-              <p
-                className={`text-sm font-medium ${
-                  attemptsInfo.type === 'locked' ? 'text-red-200' : 'text-yellow-200'
-                }`}
-              >
+            <div className={`mb-4 p-3 rounded-lg border ${
+              attemptsInfo.type === 'locked'
+                ? 'bg-red-500/10 border-red-500/30'
+                : 'bg-yellow-500/10 border-yellow-500/30'
+            }`}>
+              <p className={`text-sm ${attemptsInfo.type === 'locked' ? 'text-red-400' : 'text-yellow-400'}`}>
                 {attemptsInfo.message}
               </p>
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Email Address
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
             </div>
 
-            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-purple-300 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-400 mb-2">Password</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-2 bg-slate-800/50 border border-purple-500/30 rounded-lg text-white placeholder-purple-500/50 focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20 transition-all"
+                className="w-full px-4 py-3 bg-[#111] border border-white/8 rounded-lg text-white placeholder-gray-600 focus:outline-none focus:border-blue-600/60 focus:ring-1 focus:ring-blue-600/30 transition-all text-sm"
               />
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-6 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 disabled:from-purple-500/50 disabled:to-blue-600/50 text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/50 transform hover:-translate-y-0.5 disabled:transform-none"
+              className="w-full mt-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-900 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-blue-600/25 hover:shadow-blue-500/35"
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </button>
           </form>
 
-          {/* Signup Link */}
-          <p className="text-center text-purple-300 text-sm mt-6">
+          <p className="text-center text-gray-600 text-sm mt-6">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-semibold">
-              Sign up
-            </Link>
+            <Link to="/signup" className="text-blue-500 hover:text-blue-400 font-semibold">Sign up</Link>
           </p>
         </div>
 
-        {/* Info */}
-        <div className="mt-6 text-center text-purple-400 text-xs">
-          <p>Demo Credentials:</p>
-          <p>Email: demo@example.com | Password: Demo@123456</p>
+        <div className="mt-5 text-center text-gray-700 text-xs">
+          <p>Demo: demo@example.com · Demo@123456</p>
         </div>
       </div>
     </div>
